@@ -1,0 +1,7 @@
+.MAKE_VERSION:	VERSION-1.0
+.BUILT_LAST_MAKE_RUN:
+reflattenImage.o:	/usr/include/stdio.h /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h /usr/include/string.h changeFlat.h /home/ian/progs/ers1/makeDEM/makeDEM.h /home/ian/progs/ers1/ers1Code/ers1.h /home/ian/progs/clib/standard.h /usr/include/malloc.h /home/ian/progs/cRecipes/cRecipes.h /home/ian/progs/ers1/getLocC/parfile.h /home/ian/progs/ers1/GeoCode/geocode.h /usr/include/math.h /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h 
+	cc -fast -c -DPAF=0 -I/home/ian/progs  -c  reflattenImage.c
+changeflat.o:	/usr/include/stdio.h /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h /usr/include/string.h changeFlat.h /home/ian/progs/ers1/makeDEM/makeDEM.h /home/ian/progs/ers1/ers1Code/ers1.h /home/ian/progs/clib/standard.h /usr/include/malloc.h /home/ian/progs/cRecipes/cRecipes.h /home/ian/progs/ers1/getLocC/parfile.h /home/ian/progs/ers1/GeoCode/geocode.h /usr/include/sys/types.h /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h /usr/include/sys/select.h
+changeflat.o:	/usr/include/sys/time.h /usr/include/time.h /usr/include/sys/siginfo.h /usr/include/sys/machsig.h /usr/include/math.h /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h 
+	cc -fast -c -DPAF=0 -I/home/ian/progs  -c  changeflat.c

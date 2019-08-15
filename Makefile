@@ -48,3 +48,18 @@ intfloat:
                 -lm  -o $(BINDIR)/intfloat
 
 
+CHANGEFLAT =	changeFlat/$(MACHTYPE)-$(OSTYPE)/changeflat.o changeFlat/$(MACHTYPE)-$(OSTYPE)/reflattenImage.o changeFlat/$(MACHTYPE)-$(OSTYPE)/inputParamFile.o 
+CHANGEFLATDIRS =	changeFlat
+
+changeflat :	
+	@for i in ${CHANGEFLATDIRS}; do \
+		( 	echo "<<< Descending in directory: $$i >>>"; \
+	                cd $$i; \
+			make FLAGS=$(CCFLAGS) INCLUDEPATH=$(INCLUDEPATH) PAF=0; \
+			cd $(PROGDIR); \
+		); done
+		gcc -m32 $(CCFLAGS1) \
+                $(CHANGEFLAT)  $(STANDARD) $(RECIPES) $(UNWRAP)  $(CULLST) intFloat/$(MACHTYPE)-$(OSTYPE)/getPhaseImage.o \
+                -lm  -o $(BINDIR)/changeflat
+
+

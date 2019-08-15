@@ -1,0 +1,17 @@
+CC =		cc
+CFLAGS  =	-Aa -c -g
+FFLAGS  =	 -fast
+
+
+OBJS=  changeflat.c reflattenImage.c
+
+all:	
+	cp ../*.c . 
+	cp ../*.h . 
+	cc -Aa -c -g $(OBJS)
+	rm -f *.c
+	rm -f *.h
+
+
+
+

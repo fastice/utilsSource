@@ -1,0 +1,8 @@
+#include "ers1/makeDEM/makeDEM.h"
+
+
+/*
+   Reflatten image using new baselines.
+*/
+     void reflattenImage(unwrapPhaseImage *inputImage, paramData params,
+                        int dBpFlag);

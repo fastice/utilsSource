@@ -1,0 +1,12 @@
+CC =		acc
+CFLAGS  =	 -g -c
+
+OBJS= changeflat.o reflattenImage.o
+
+.KEEP_STATE:
+all:	$(OBJS)
+
+
+
+
+
