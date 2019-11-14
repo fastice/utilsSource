@@ -87,11 +87,8 @@
 }
 
 
-    static void readArgs(int argc,char *argv[], int *nr, int *na,
-                         char **imageFile,double *minValue,
-                         int *interpLength,int *padEdges, int *intType, 
-                         int *thresh,float *ratThresh, int *fastFlag,
-                         int *allowBreaks,int *islandThresh)
+    static void readArgs(int argc,char *argv[], int *nr, int *na,  char **imageFile,double *minValue,
+                         int *interpLength,int *padEdges, int *intType, int *thresh,float *ratThresh, int *fastFlag, int *allowBreaks,int *islandThresh)
 {
     int filenameArg;
     char *argString;
@@ -154,11 +151,12 @@
  
     static void usage()
 { 
-    error("\n%s\n%s\n\n%s\n\n%s\n\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n\n",
+    error("\n%s\n%s\n\n%s\n\n%s\n\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n\n",
       "Interpolate values < minValue in a Floating Point image ",
       "Usage:",
     " interpfloat -islandThresh islandThresh -thresh thresh -ratThresh -padEdges -nr nr -na na imageFile",
       "where",
+      "  minValue = use linear interpolation (-2.e8)", 
       "  linear       = use linear interpolation (default)", 
       "  quadratic    = use quadratic interpolation",
       "  wdist        = use weighted distance interpolation",

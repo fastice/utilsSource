@@ -20,14 +20,11 @@
     static void planeCoeffs(void *x,int i,double *afunc, int ma);
     void quadCoeffs(void *x,int i,double *afunc, int ma);
 
-    static float planeInterp(intData *data,double *zTmp,double *dTmp,
-                              int nPts, float x, float y, double **u,
-                              double **v,double *w, double a[4], int update);
+    static float planeInterp(intData *data,double *zTmp,double *dTmp, int nPts, float x, float y, double **u,  double **v,double *w, double a[4], int update);
 
     static float quadInterp(intData *data,double *zTmp,double *dTmp, int nPts, float x, float y, double **u,double **v,double *w, double a[7], int update);
 
-     static void clipBorders(unwrapPhaseImage *inputImage, char **mask,
-                            double minValue, int *width,int *height);
+     static void clipBorders(unwrapPhaseImage *inputImage, char **mask, double minValue, int *width,int *height);
     static void screenHoles(hole *holes, int maxLabel, int thresh,  int width, int height,    int interpLength,float ratThresh,int allowBreaks);
 
 /*
@@ -77,6 +74,8 @@
 /*
    Mask image
 */
+fprintf(stderr,"minvalue %f\n",minValue);
+/*error("stop");*/
     mask  = (char **) malloc(na * sizeof(char *) ); 
     for(i=0; i < na; i++) 
         mask[i] = (char *) malloc(nr * sizeof(char) );
@@ -205,14 +204,11 @@
                 } 
                 if(nPts > 3) {
                     if(intType == WDIST || (nPts < 6 && intType==QUADRATIC)) 
-                        inputImage->phase[y][x]=
-                              wDistInterp(data,zTmp,dTmp,nPts,x,y);
+                        inputImage->phase[y][x]= wDistInterp(data,zTmp,dTmp,nPts,x,y);
                     else if(intType==LINEAR)
-                       inputImage->phase[y][x]=
-                            planeInterp(data,zTmp,dTmp,nPts,x,y,u,v,w,a,update);
+                       inputImage->phase[y][x]=planeInterp(data,zTmp,dTmp,nPts,x,y,u,v,w,a,update);
                     else if(intType==QUADRATIC) 
-                       inputImage->phase[y][x]=
-                            quadInterp(data,zTmp,dTmp,nPts,x,y,u,v,w,a,update);
+                       inputImage->phase[y][x]= quadInterp(data,zTmp,dTmp,nPts,x,y,u,v,w,a,update);
                     else error("intFloatImage: Invalid interpolation type");
                 }
               } 
@@ -347,10 +343,7 @@
 }
 
 
-
-
-     static float wDistInterp(intData *data,double *zTmp,double *dTmp,
-                             int nPts,float x,float y)
+     static float wDistInterp(intData *data,double *zTmp,double *dTmp, int nPts,float x,float y)
 {
     int i;
     double weight;
@@ -364,7 +357,7 @@
        sum += w * zTmp[i];
        weight += w;
     }
-    result=(float)(sum/weight);  
+    result=(float)(sum/weight);
     return result;
 }
 
@@ -428,8 +421,7 @@
 
 
 
-    static void clipBorders(unwrapPhaseImage *inputImage, char **mask,
-                            double minValue,int *width, int *height)
+    static void clipBorders(unwrapPhaseImage *inputImage, char **mask, double minValue,int *width, int *height)
 {
     int nr,na;
     int na1,nr1,na2,nr2,count;

@@ -2,6 +2,7 @@
 #include"string.h"
 #include "intFloat.h"
 #include "clib/standard.h"
+#include "stdlib.h"
 /*
    Input phase image.
 */ 
