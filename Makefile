@@ -30,11 +30,11 @@ CULLST = $(PROGDIR)/speckleSource/Cullst/$(MACHTYPE)-$(OSTYPE)/cullIslands.o
 
 TARGETS = intfloat
 
-
+# $(PROGDIR)/speckleSource
 all: $(TARGETS)
 
 INTFLOAT=	intFloat/$(MACHTYPE)-$(OSTYPE)/intfloat.o intFloat/$(MACHTYPE)-$(OSTYPE)/intFloatImage.o intFloat/$(MACHTYPE)-$(OSTYPE)/getPhaseImage.o
-INTFLOATDIRS =	 intFloat  $(PROGDIR)/cRecipes 
+INTFLOATDIRS =	 intFloat  $(PROGDIR)/cRecipes
 
 intfloat:	
 	@for i in ${INTFLOATDIRS}; do \
