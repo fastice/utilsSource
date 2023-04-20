@@ -6,7 +6,7 @@
 #include "unwrapSource/ers1Code/ers1.h"
 #include "unwrapSource/unWrap/unwrap.h"
 #include "cRecipes/nrutil.h"
-
+#include "cRecipes/cRecipes.h"
 typedef struct intDataType
 {
 	float x;
@@ -335,7 +335,6 @@ static float planeInterp(intData *data, double *zTmp, double *dTmp,
 	int32_t i;
 	double chisq;
 	float result;
-	intData *dat;
 
 	if (update == TRUE)
 	{

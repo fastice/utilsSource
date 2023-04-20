@@ -60,8 +60,6 @@ int main(int argc, char *argv[])
     for (i = 0; i < inputImage.azimuthSize; i++)
         fwriteBS(inputImage.phase[i],
                  inputImage.rangeSize, sizeof(float), stdout, FLOAT32FLAG);
-
-    return;
 }
 
 static void readArgs(int argc, char *argv[], int32_t *passType, int32_t *noRamp,

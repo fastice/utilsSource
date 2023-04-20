@@ -1,3 +1,4 @@
+#include <stdint.h>
 #define WDIST 1
 #define LINEAR 2
 #define QUADRATIC 3

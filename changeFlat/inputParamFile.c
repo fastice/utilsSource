@@ -29,7 +29,7 @@ void inputParamFile(char *paramFile, paramData *params)
        Get non baseline params
     */
     lineCount = getDataString(fp, lineCount, line, &eod);
-    if (sscanf(line, "%lf%lf%lf%lf%i%i%lf%lf", &Re, &RNear, &Rc, &nlr, &nla, &RangePixelSize, &lambda) != 8)
+    if (sscanf(line, "%lf%lf%lf%lf%i%i%lf%lf", &H, &Re, &RNear, &Rc, &nlr, &nla, &RangePixelSize, &lambda) != 8)
     {
         lambda = LAMBDAERS1; /* For backwards compatability */
         if (sscanf(line, "%lf%lf%lf%lf%i%i%lf", &H, &Re, &RNear, &Rc, &nlr, &nla, &RangePixelSize) != 7)
