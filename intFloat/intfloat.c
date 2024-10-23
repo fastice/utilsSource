@@ -6,7 +6,7 @@
 #include <time.h>
 #include <math.h>
 #include <stdlib.h>
-
+#include "gdalIO/gdalIO/grimpgdal.h"
 #include "speckleSource/Cullst/cullst.h"
 /*
   This program takes a floating point32_t images and replaces values that

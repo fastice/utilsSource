@@ -131,7 +131,7 @@ void interpFloatImage(unwrapPhaseImage *inputImage, int32_t interpLength, int32_
 	int32_t skipValue;
 	int32_t maxBorders;	  /* Maximum border points over all holes */
 	int32_t skip, update; /* Flags used in interpolation loop */
-	FILE *fp;
+
 	/*
 	  Check interpLength
 	*/
@@ -185,6 +185,7 @@ void interpFloatImage(unwrapPhaseImage *inputImage, int32_t interpLength, int32_
 	  Pass 1: Get max label
 	*/
 	maxLabel = findMaxLabel(labels, nr, na);
+
 	fprintf(stderr, "Pass 1 -- checking labels\n");
 	holes = createHoles(maxLabel);
 	/*
@@ -226,7 +227,7 @@ void interpFloatImage(unwrapPhaseImage *inputImage, int32_t interpLength, int32_
 	  Now loop through holes and points interpolating
 	*/
 	fprintf(stderr, "Fixing holes\n");
-	for (i = 1; i < maxLabel; i++)
+	for (i = 1; i <= maxLabel; i++)
 	{
 		if (holes[i].nH > 0)
 		{
@@ -277,7 +278,7 @@ static void screenHoles(hole *holes, int32_t maxLabel, int32_t thresh,
 	int32_t minX, maxX, minY, maxY;
 	float ratio;
 
-	for (i = 1; i < maxLabel; i++)
+	for (i = 1; i <= maxLabel; i++)
 	{
 		if (holes[i].nH >= thresh)
 		{
@@ -640,7 +641,7 @@ void clipIslands(unwrapPhaseImage *inputImage, double minValue, int32_t intType,
 	/*
 	  Set small island regions to no data
 	*/
-	for (i = 1; i < maxLabel; i++)
+	for (i = 1; i <= maxLabel; i++)
 	{
 		if (holes[i].nH < sizeThresh)
 		{
