@@ -4,6 +4,7 @@
 #include "intFloat.h"
 #include "clib/standard.h"
 #include "stdlib.h"
+#include "mosaicSource/common/common.h"
 /*
    Input phase image.
 */
@@ -11,6 +12,7 @@ void getPhaseImage(char *inputFile, int32_t nr, int32_t na, unwrapPhaseImage *in
 {
     FILE *fp;
     int32_t i;
+    size_t retValue;
     /*
        Init image
     */
@@ -27,6 +29,11 @@ void getPhaseImage(char *inputFile, int32_t nr, int32_t na, unwrapPhaseImage *in
     else
         fp = stdin;
     for (i = 0; i < na; i++)
-        freadBS(inputImage->phase[i], nr * sizeof(float), 1, fp, FLOAT32FLAG);
+        if(inputImage->byteOrder == MSB)
+            freadBS(inputImage->phase[i], nr * sizeof(float), 1, fp, FLOAT32FLAG);
+        else if(inputImage->byteOrder == LSB)
+            retValue = fread(inputImage->phase[i], nr * sizeof(float), 1, fp);
+        else
+            error("invalid byte order");
     return;
 }

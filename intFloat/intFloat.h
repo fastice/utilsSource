@@ -19,6 +19,7 @@ typedef struct unwrapPhaseTypeDef
 	int32_t rangeSize;
 	int32_t azimuthSize;
 	int32_t passType;
+	unsigned char byteOrder;
 	float **phase;
 } unwrapPhaseImage;
 /*

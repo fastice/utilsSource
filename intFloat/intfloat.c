@@ -13,8 +13,9 @@
   are less than minVal with interpolated values.
 */
 
-static void readArgs(int32_t argc, char *argv[], int32_t *nr, int32_t *na, char **imageFile, double *minValue, int32_t *interpLength, int32_t *padEdges, int32_t *intType,
-					 int32_t *thresh, float *ratThresh, int32_t *fastFlag, int32_t *allowBreaks, int32_t *islandThresh, int32_t *islandAreaThresh);
+static void readArgs(int32_t argc, char *argv[], int32_t *nr, int32_t *na, char **imageFile, double *minValue, 
+					int32_t *interpLength, int32_t *padEdges, int32_t *intType, int32_t *thresh, float *ratThresh, 
+					int32_t *fastFlag, int32_t *allowBreaks, int32_t *islandThresh, int32_t *islandAreaThresh, unsigned char *byteOrder);
 static void usage();
 
 /*
@@ -33,6 +34,7 @@ int main(int argc, char *argv[])
 	time_t tloc;
 	unwrapPhaseImage inputImage;
 	char *imageFile, *paramFile;
+	unsigned char byteOrder;
 	double minVal;
 	int32_t interpLength, padEdges;
 	int32_t intType;
@@ -47,7 +49,7 @@ int main(int argc, char *argv[])
 	tloc = time(NULL);
 	readArgs(argc, argv, &nr, &na, &imageFile, &minVal,
 			 &interpLength, &padEdges, &intType, &thresh, &ratThresh, &fastFlag,
-			 &allowBreaks, &islandThresh, &islandAreaThresh);
+			 &allowBreaks, &islandThresh, &islandAreaThresh,  &byteOrder);
 	if (intType == LINEAR)
 		fprintf(stderr, "\n*** Linear Interpolation ***\n\n");
 	if (intType == QUADRATIC)
@@ -56,15 +58,14 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "\n*** Weighted-Distance Interpolation ***\n\n");
 	if (fastFlag == TRUE)
 		fprintf(stderr, "\n*** Fast Interpolation ***\n\n");
+	inputImage.byteOrder = byteOrder;
 	/*
 	  Input image
 	*/
-	fprintf(stderr, "A\n");
 	getPhaseImage(imageFile, nr, na, &inputImage);
 	/*
-	  Add back in old phase ramps and subtract new
+	 Interp image
 	*/
-	fprintf(stderr, "B\n");
 	interpFloatImage(&inputImage, interpLength, padEdges, minVal, intType, thresh, ratThresh, fastFlag, allowBreaks);
 	/*
 	  Cull islands (isolated areas of valid data that are may be bad data
@@ -83,15 +84,17 @@ int main(int argc, char *argv[])
 		cullIslands(&cullPar);
 	}
 	for (i = 0; i < inputImage.azimuthSize; i++)
-		fwriteBS(inputImage.phase[i],
-				 inputImage.rangeSize * sizeof(float), 1, stdout, FLOAT32FLAG);
+		if(byteOrder == MSB)
+			fwriteBS(inputImage.phase[i], inputImage.rangeSize * sizeof(float), 1, stdout, FLOAT32FLAG);
+		else
+			fwrite(inputImage.phase[i], inputImage.rangeSize * sizeof(float), 1, stdout);
 	fprintf(stderr, "Interpolation time %li\n", -(tloc - time(NULL)));
 	return 0;
 }
 
 static void readArgs(int32_t argc, char *argv[], int32_t *nr, int32_t *na, char **imageFile, double *minValue,
 					 int32_t *interpLength, int32_t *padEdges, int32_t *intType, int32_t *thresh, float *ratThresh, int32_t *fastFlag, int32_t *allowBreaks,
-					 int32_t *islandThresh, int32_t *islandAreaThresh)
+					 int32_t *islandThresh, int32_t *islandAreaThresh, unsigned char *byteOrder)
 {
 	int32_t filenameArg;
 	char *argString;
@@ -111,6 +114,7 @@ static void readArgs(int32_t argc, char *argv[], int32_t *nr, int32_t *na, char 
 	*allowBreaks = FALSE;
 	*thresh = 50000;
 	*fastFlag = FALSE;
+	*byteOrder = MSB;
 	n = argc - 2;
 	for (i = 1; i <= n; i++)
 	{
@@ -177,6 +181,10 @@ static void readArgs(int32_t argc, char *argv[], int32_t *nr, int32_t *na, char 
 		{
 			*fastFlag = TRUE;
 		}
+		else if (strstr(argString, "LSB") != NULL)
+		{
+			*byteOrder = LSB;
+		}
 		else
 			usage();
 	}
@@ -186,11 +194,12 @@ static void readArgs(int32_t argc, char *argv[], int32_t *nr, int32_t *na, char 
 
 static void usage()
 {
-	error("\n%s\n%s\n\n%s\n\n%s\n\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n\n",
+	error("\n%s\n%s\n\n%s\n\n%s\n\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n\n",
 		  "Interpolate values < minValue in a Floating Point image ",
 		  "Usage:",
 		  " interpfloat -islandThresh islandThresh -islandAreaThresh islandAreaThresh  -thresh thresh -ratThresh -padEdges -nr nr -na na imageFile",
 		  "where",
+		  "  LSB = Use LSB byte order for i/o instead of default MSB",
 		  "  minValue = use linear interpolation (-2.e8)",
 		  "  linear       = use linear interpolation (default)",
 		  "  quadratic    = use quadratic interpolation",
