@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
     /*
         Input image
     */
+    inputImage.byteOrder = MSB;
     getPhaseImage(imageFile, nr, na, &inputImage);
     /*
         Get baseline and other params

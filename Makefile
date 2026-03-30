@@ -101,6 +101,7 @@ STANDARD =	$(PROGDIR)/clib/$(MACHTYPE)-$(OSTYPE)/standard.o
 UNWRAP = $(PROGDIR)/unwrapSource/unWrap/$(MACHTYPE)-$(OSTYPE)/labelRegions.o
 
 CULLST = $(PROGDIR)/speckleSource/Cullst/$(MACHTYPE)-$(OSTYPE)/cullIslands.o
+FILTERFLOAT =	 filterFloat/$(MACHTYPE)-$(OSTYPE)/filterFloatImage.o
 
 TARGETS = intfloat changeflat
 
@@ -137,3 +138,16 @@ changeflat :
                 -lm  -o $(BINDIR)/changeflat
 
 
+FILTERFLOATDIRS =	 filterFloat
+
+filterfloat:	
+	@for i in ${FILTERFLOATDIRS}; do \
+		( 	echo "<<< Descending in directory: $$i >>>"; \
+	                cd $$i; \
+			make FLAGS=$(CCFLAGS) INCLUDEPATH=$(INCLUDEPATH) PAF=0;  \
+			cd $(PROGDIR); \
+		); done
+		gcc  $(CCFLAGS1) \
+               filterFloat/$(MACHTYPE)-$(OSTYPE)/filterfloat.o \
+                $(FILTERFLOAT) $(STANDARD) $(RECIPES) $(UNWRAP)  $(CULLST)  intFloat/$(MACHTYPE)-$(OSTYPE)/getPhaseImage.o \
+               -lm  -o $(BINDIR)/filterfloat
