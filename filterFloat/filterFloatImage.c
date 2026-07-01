@@ -6,6 +6,98 @@
 
 static void filterSquare(unwrapPhaseImage *inputImage, float **tmpImage,
                             char **mask,int wr, int wa);
+
+/*
+   Per-pixel variable-half-width box average, repeated nIterations times (box->triangular->
+   Gaussian-ish, same idea as filterFloatImage's fixed-width nIterations cascade). wr[i][j]/
+   wa[i][j] are literal half-widths in pixels (full window = 2*w+1) -- same convention
+   computeSmoothRadiusMap (mosaicSource/simInSAR/computeSmoothRadius.c) uses to determine them,
+   so a radius map produced by that sweep can be fed straight into this function. Unlike
+   filterFloatImage's fixed-width sliding-window recurrence (which assumes the window is the
+   same width as it slides, so cannot vary per pixel), this uses a 2D summed-area table for O(1)
+   box-sum lookup at any per-pixel window size.
+*/
+void filterFloatImageVariable(unwrapPhaseImage *inputImage, int **wr, int **wa,
+                              int nIterations, double minValue)
+{
+    float **phase;
+    char **mask;
+    float **out;
+    double **sumV, **sumN;
+    int na, nr, i, j, k;
+    int a0, a1, r0, r1;
+    double V, N;
+
+    na = inputImage->azimuthSize;
+    nr = inputImage->rangeSize;
+    phase = inputImage->phase;
+
+    mask = (char **)malloc(na * sizeof(char *));
+    out  = (float **)malloc(na * sizeof(float *));
+    sumV = (double **)malloc((na + 1) * sizeof(double *));
+    sumN = (double **)malloc((na + 1) * sizeof(double *));
+    for (i = 0; i <= na; i++)
+    {
+        sumV[i] = (double *)calloc(nr + 1, sizeof(double));
+        sumN[i] = (double *)calloc(nr + 1, sizeof(double));
+    }
+    for (i = 0; i < na; i++)
+    {
+        mask[i] = (char *)malloc(nr * sizeof(char));
+        out[i]  = (float *)malloc(nr * sizeof(float));
+    }
+    /* Mask computed once, from the original (unfiltered) image -- same convention as
+       filterFloatImage, which never recomputes its mask across iterations. */
+    for (i = 0; i < na; i++)
+        for (j = 0; j < nr; j++)
+            mask[i][j] = (phase[i][j] > minValue) ? (char)1 : (char)0;
+
+    for (k = 0; k < nIterations; k++)
+    {
+        for (i = 0; i < na; i++)
+        {
+            for (j = 0; j < nr; j++)
+            {
+                double v = mask[i][j] ? (double)phase[i][j] : 0.0;
+                double n = mask[i][j] ? 1.0 : 0.0;
+                sumV[i + 1][j + 1] = sumV[i][j + 1] + sumV[i + 1][j] - sumV[i][j] + v;
+                sumN[i + 1][j + 1] = sumN[i][j + 1] + sumN[i + 1][j] - sumN[i][j] + n;
+            }
+        }
+        for (i = 0; i < na; i++)
+        {
+            for (j = 0; j < nr; j++)
+            {
+                a0 = i - wa[i][j];
+                a1 = i + wa[i][j] + 1;
+                r0 = j - wr[i][j];
+                r1 = j + wr[i][j] + 1;
+                if (a0 < 0) a0 = 0;
+                if (r0 < 0) r0 = 0;
+                if (a1 > na) a1 = na;
+                if (r1 > nr) r1 = nr;
+                V = sumV[a1][r1] - sumV[a0][r1] - sumV[a1][r0] + sumV[a0][r0];
+                N = sumN[a1][r1] - sumN[a0][r1] - sumN[a1][r0] + sumN[a0][r0];
+                out[i][j] = (N > 0.) ? (float)(V / N) : phase[i][j];
+            }
+        }
+        for (i = 0; i < na; i++)
+            for (j = 0; j < nr; j++)
+                phase[i][j] = out[i][j];
+    }
+    /* Mark originally-bad points, same convention as filterFloatImage */
+    for (i = 0; i < na; i++)
+        for (j = 0; j < nr; j++)
+            if (mask[i][j] == 0)
+                phase[i][j] = (float)minValue;
+
+    for (i = 0; i <= na; i++) { free(sumV[i]); free(sumN[i]); }
+    free(sumV);
+    free(sumN);
+    for (i = 0; i < na; i++) { free(mask[i]); free(out[i]); }
+    free(mask);
+    free(out);
+}
 /*
     Filter floating point image.
 */

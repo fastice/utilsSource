@@ -103,15 +103,20 @@ UNWRAP = $(PROGDIR)/unwrapSource/unWrap/$(MACHTYPE)-$(OSTYPE)/labelRegions.o
 CULLST = $(PROGDIR)/speckleSource/Cullst/$(MACHTYPE)-$(OSTYPE)/cullIslands.o
 FILTERFLOAT =	 filterFloat/$(MACHTYPE)-$(OSTYPE)/filterFloatImage.o
 
+GDALOBJDIR =	$(PROGDIR)/gdalIO/gdalIO/$(MACHTYPE)-$(OSTYPE)
+GDALOBJ =	$(GDALOBJDIR)/gdalIO.o $(GDALOBJDIR)/tiffWriteCode.o $(GDALOBJDIR)/dictionaryCode.o
+
+VRTIO =		intFloat/$(MACHTYPE)-$(OSTYPE)/vrtIO.o
+
 TARGETS = intfloat changeflat
 
 # $(PROGDIR)/speckleSource
 all: $(TARGETS)
 
 INTFLOAT=	intFloat/$(MACHTYPE)-$(OSTYPE)/intfloat.o intFloat/$(MACHTYPE)-$(OSTYPE)/intFloatImage.o intFloat/$(MACHTYPE)-$(OSTYPE)/getPhaseImage.o
-INTFLOATDIRS =	 intFloat  $(PROGDIR)/cRecipes $(PROGDIR)/unwrapSource/unWrap $(PROGDIR)/clib $(PROGDIR)/speckleSource/Cullst
+INTFLOATDIRS =	 intFloat  $(PROGDIR)/cRecipes $(PROGDIR)/unwrapSource/unWrap $(PROGDIR)/clib $(PROGDIR)/speckleSource/Cullst $(PROGDIR)/gdalIO/gdalIO
 
-intfloat:	
+intfloat:
 	@for i in ${INTFLOATDIRS}; do \
 		( 	echo "<<< Descending in directory: $$i >>>"; \
 	                cd $$i; \
@@ -119,8 +124,8 @@ intfloat:
 			cd $(PROGDIR); \
 		); done
 		gcc $(MEM) $(CCFLAGS1) \
-                $(INTFLOAT)  $(STANDARD) $(RECIPES) $(UNWRAP)  $(CULLST) \
-                -lm  -o $(BINDIR)/intfloat
+                $(INTFLOAT) $(VRTIO) $(STANDARD) $(RECIPES) $(UNWRAP) $(CULLST) \
+                $(GDALOBJ) $(GDAL) -lm  -o $(BINDIR)/intfloat
 
 
 CHANGEFLAT =	changeFlat/$(MACHTYPE)-$(OSTYPE)/changeflat.o changeFlat/$(MACHTYPE)-$(OSTYPE)/reflattenImage.o changeFlat/$(MACHTYPE)-$(OSTYPE)/inputParamFile.o 
@@ -138,16 +143,17 @@ changeflat :
                 -lm  -o $(BINDIR)/changeflat
 
 
-FILTERFLOATDIRS =	 filterFloat
+FILTERFLOATDIRS =	 filterFloat intFloat $(PROGDIR)/cRecipes $(PROGDIR)/unwrapSource/unWrap $(PROGDIR)/clib $(PROGDIR)/speckleSource/Cullst $(PROGDIR)/gdalIO/gdalIO
 
-filterfloat:	
+filterfloat:
 	@for i in ${FILTERFLOATDIRS}; do \
 		( 	echo "<<< Descending in directory: $$i >>>"; \
 	                cd $$i; \
-			make FLAGS=$(CCFLAGS) INCLUDEPATH=$(INCLUDEPATH) PAF=0;  \
+			make FLAGS=$(CCFLAGS) INCLUDEPATH=$(INCLUDEPATH) PAF=0; \
 			cd $(PROGDIR); \
 		); done
-		gcc  $(CCFLAGS1) \
+		gcc $(CCFLAGS1) \
                filterFloat/$(MACHTYPE)-$(OSTYPE)/filterfloat.o \
-                $(FILTERFLOAT) $(STANDARD) $(RECIPES) $(UNWRAP)  $(CULLST)  intFloat/$(MACHTYPE)-$(OSTYPE)/getPhaseImage.o \
-               -lm  -o $(BINDIR)/filterfloat
+               $(FILTERFLOAT) $(VRTIO) $(STANDARD) $(RECIPES) $(UNWRAP) $(CULLST) \
+               intFloat/$(MACHTYPE)-$(OSTYPE)/getPhaseImage.o \
+               $(GDALOBJ) $(GDAL) -lm  -o $(BINDIR)/filterfloat

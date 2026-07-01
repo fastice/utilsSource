@@ -1,3 +1,5 @@
+#ifndef INTFLOAT_H
+#define INTFLOAT_H
 #include <stdint.h>
 #define WDIST 1
 #define LINEAR 2
@@ -30,3 +32,5 @@ void interpFloatImage(unwrapPhaseImage *inputImage, int32_t interpLength, int32_
 void getPhaseImage(char *inputFile, int32_t nr, int32_t na, unwrapPhaseImage *inputImage);
 
 void clipIslands(unwrapPhaseImage *inputImage, double minValue, int32_t intType, int32_t fastFlag, int32_t sizeThresh);
+
+#endif /* INTFLOAT_H */
